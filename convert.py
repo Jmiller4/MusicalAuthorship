@@ -1,3 +1,4 @@
+
 from music21 import *
 
 class Converter:
@@ -18,7 +19,13 @@ class Converter:
 		#figured bass line
 		harmonies = figuredBass.checker.extractHarmonies(piece)
 		for (offsets, notes) in sorted(harmonies.items()):
-			self.bass.append([interval.Interval(note.Note(key.tonic), notes[0]).chromatic.semitones, interval.Interval(note.Note(key.tonic), notes[1]).chromatic.semitones, interval.Interval(note.Note(key.tonic),notes[2]).chromatic.semitones])
+			addList = []
+			for i in range(0, len(notes)):
+				if (notes[i].isNote):
+					addList.append(interval.Interval(note.Note(key.tonic), notes[i]).chromatic.semitones)
+				elif (notes[i].isRest):
+					addList.append(notes[i])
+			self.bass.append(addList)
 	def getBass(self):
 		return self.bass
 	def getChords(self):
