@@ -50,8 +50,8 @@ def train(n):
 	return learners
 
 def main():
-	input = ""
-	while (input != 'exit'):
+	toPredict = ""
+	while (toPredict != 'exit'):
 		toPredict = input("Please specify the filepath to a .mxl score to predict, or type 'exit' to quit: ")
 		n = eval(input("What length n-gram model? "))
 
