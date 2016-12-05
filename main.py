@@ -12,6 +12,21 @@ def main():
 	pieceToPredict = input("Please specify the filepath to a .mxl score: ")
 	n = eval(input("What length n-gram model? "))
 
+	currdir = os.path.dirname(__file__)
+	folderpath = "mxl_files"
+	finalPath = os.path.join(currdir, folderpath)
+
+	for composer in os.listdir(finalPath):
+		nextPath = os.path.join(finalPath, composer)
+		print(composer, ':')
+		if (os.path.isdir(nextPath)):
+			for piece in os.listdir(nextPath):
+			    if piece.endswith(".mxl"): 
+			        print('\t', piece)
+			        continue
+			    else:
+			        continue
+
 	trainingPieces = fillTrainingList() #list of piece objects to train on
 
 	converter = convert.Converter() #for-loop
