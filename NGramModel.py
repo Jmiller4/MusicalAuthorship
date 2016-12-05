@@ -1,4 +1,4 @@
-
+import music21 as m2
 
 class N_Gram_Model():
 
@@ -38,7 +38,7 @@ class N_Gram_Model():
                 if i + j < len(sequence):
                     #find the current n-length sequence, starting from sequence[i]
 
-                    gram = self.convertToNGram(self.sequence[i:(i+j)])
+                    gram = self.convertToNGram(sequence[i:(i+j)])
 
                     #update dictionaries to reflect this newly seen gram
                     if gram in self.n_grams[j].keys():
@@ -59,10 +59,13 @@ class N_Gram_Model():
 
     def catchFiguredBass(self, list, isFiguredBass):
         if isFiguredBass:
-            s = ""
-            for i in list:
-                s += str(i)
-            return s
+            try:
+                s = ""
+                for i in list:
+                    s += str(i)
+                return s
+            except TypeError:
+                return "REST"
         return list
 
     def decrease_gram(self, n_gram):
