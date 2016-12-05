@@ -1,51 +1,46 @@
-from music21 import *
+#from music21 import * maybe need this maybe not
 import NGramModel
 import convert
 import piece
 import os
+import NGLearner
 
 
-def fillTrainingList():
-	return 0
+
+def train(n):
+	learners = {} #{composer name: NGLearner object}
+
+	currdir = os.path.dirname(__file__) #the absolute filepath to the directory containing main.py
+	folderpath = "mxl_files" #the subdirectory containing our training data
+	finalPath = os.path.join(currdir, folderpath) #concatenate the two paths for use
+
+	for composer in os.listdir(finalPath): #mxl_files is full of folders corresponding to composers; inside is all pieces of theirs to train with
+		nextPath = os.path.join(finalPath, composer) #the path to this composer folder
+
+		composerFB = NGramModel.N_Gram_Model(n, True) #the learner for figured bass
+		composerChords = NGramModel.N_Gram_Model(n, False) #the learner for chords
+
+		if (os.path.isdir(nextPath)): #if this is a folder
+			for piece in os.listdir(nextPath): #loop through all pieces by the corresponding composer
+			    if piece.endswith(".mxl"): #if the file is .mxl format (it should be)
+			    	piecePath = os.path.join(nextPath, piece)
+			    	C = convert.Converter(piecePath)
+			    	C.convert() #convert the file
+
+			    	composerFB.train(C.getBass()) #train on this piece's figured bass for this composer
+			    	composerChords.train(C.getChords()) #train on this piece's chords for this composer
+		toAdd = NGLearner.learner(composerFB, composerChords)
+		learners[composer] = toAdd
+
+	return learners
 
 def main():
 	pieceToPredict = input("Please specify the filepath to a .mxl score: ")
 	n = eval(input("What length n-gram model? "))
 
-	currdir = os.path.dirname(__file__)
-	folderpath = "mxl_files"
-	finalPath = os.path.join(currdir, folderpath)
+	learners = train(n) #list of piece objects to train on
 
-	for composer in os.listdir(finalPath):
-		nextPath = os.path.join(finalPath, composer)
-		print(composer, ':')
-		if (os.path.isdir(nextPath)):
-			for piece in os.listdir(nextPath):
-			    if piece.endswith(".mxl"): 
-			        print('\t', piece)
-			        continue
-			    else:
-			        continue
-
-	trainingPieces = fillTrainingList() #list of piece objects to train on
-
-	converter = convert.Converter() #for-loop
-
-	#one of these for each composer as well
-	ngramFB = N-GramModel.N_Gram_Model(n, True) #the learner for figured bass
-	ngramChords = N-GramModel.N_Gram_Model(n, False) #the learner for chords
-
-
-	#these will be in loops
-	FB = converter.getFBList()
-	chords = converter.getChordList()
-
-
-	#loop these over all pieces in trainingPieces too
-	ngramFB.train(FB) #trains figured bass
-	ngramChords.train(chords) #trains chords
-
-	return 0
+	print (learners)
 
 main()
 

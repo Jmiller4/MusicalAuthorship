@@ -6,9 +6,10 @@ class Converter:
 		self.file = file
 		self.chords = []
 		self.bass = []
+
 	def convert(self):
 		#get list of pieces
-		piece = corpus.parse(self.file)
+		piece = converter.parse(self.file)
 		key = piece.analyze('key')
 		chords = piece.chordify()
 		#romanizing the chords
