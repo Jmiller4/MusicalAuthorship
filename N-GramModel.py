@@ -38,7 +38,7 @@ class N_Gram_Model():
                 if i + j < len(sequence):
                     #find the current n-length sequence, starting from sequence[i]
 
-                    gram = self.convertToNGram(self.sequence[i:(i+j)])
+                    gram = self.convertToNGram(sequence[i:(i+j)])
 
                     #update dictionaries to reflect this newly seen gram
                     if gram in self.n_grams[j].keys():
