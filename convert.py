@@ -1,6 +1,6 @@
 from music21 import *
 
-class Convert:
+class Converter:
 
 	def __init__(self, file):
 		self.file = file
