@@ -1,7 +1,8 @@
 from music21 import *
-import N-GramModel
+import NGramModel
 import convert
 import piece
+import os
 
 
 def fillTrainingList():
@@ -11,25 +12,21 @@ def main():
 	pieceToPredict = input("Please specify the filepath to a .mxl score: ")
 	n = eval(input("What length n-gram model? "))
 
-	for filename in os.listdir('/mxl files'):
-	    if filename.endswith(".mxl"): 
-	        print(os.path.join(directory, filename))
-	        continue
-	    else:
-	        continue
-
 	trainingPieces = fillTrainingList() #list of piece objects to train on
 
 	converter = convert.Converter() #for-loop
 
+	#one of these for each composer as well
 	ngramFB = N-GramModel.N_Gram_Model(n, True) #the learner for figured bass
 	ngramChords = N-GramModel.N_Gram_Model(n, False) #the learner for chords
 
+
+	#these will be in loops
 	FB = converter.getFBList()
 	chords = converter.getChordList()
 
 
-	#loop these over all pieces in trainingPieces
+	#loop these over all pieces in trainingPieces too
 	ngramFB.train(FB) #trains figured bass
 	ngramChords.train(chords) #trains chords
 
