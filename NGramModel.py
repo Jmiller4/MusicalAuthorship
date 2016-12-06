@@ -27,6 +27,7 @@ class N_Gram_Model():
 
         self.isFiguredBass = isFiguredBass
 
+    #updates the dictionary of n-gram counts according to the new training sequence
     def train(self, sequence):
 
         self.sequences.append(sequence)
@@ -57,6 +58,7 @@ class N_Gram_Model():
             gram += "^" + self.catchFiguredBass(k)
         return gram
 
+    #this function makes sure that everything that gets added to an individual n-gram is a string
     def catchFiguredBass(self, list):
         if self.isFiguredBass:
             try:
@@ -68,25 +70,26 @@ class N_Gram_Model():
                 return "REST"
         return list
 
+    #this function takes in an n-gram and finds the corresponding (n-1)-gram, i.e. that n-gram with the last thing chopped off
     def decrease_gram(self, n_gram):
         for i in range(len(n_gram)):
             if n_gram[len(n_gram)-i-1] == "^":
                 return n_gram[:len(n_gram)-i-1]
         return ""
 
-    #gives the probablility of a specific n gram occurring
-    def giveProbablility(self, n_gram, n):
+    #this function gives the probablility of a specific n gram occurring, and it recursively uses backoff...
+    #I'm actually not sure that using backoff is a good idea overall...
+    #b is the psuedocount for the denominator
+    def giveProbablility(self, n_gram, n, b):
 
         if n == 0:
             print("wow, not even a unigram matched this one")
-            return 1
+            return 1.0 / (self.total_grams[n] + b)
 
         if n_gram in self.n_grams[n]:
-            return float(self.n_grams[n][n_gram]) / self.total_grams[n]
+            return float(self.n_grams[n][n_gram] + 1) / (self.total_grams[n] + b)
         else:
             return self.giveProbability(self, self.decrease_gram(n_gram), n-1)
-
-
 
     #this method takes in an n, which is the max n the model will look at.
     #so for example if you built a 10-gram model but wanted to see how a 4-gram model would do on the data,
@@ -101,6 +104,6 @@ class N_Gram_Model():
 
         for i in range(len(sequence)):
             if i + n < len(sequence):
-                prob *= self.giveProbability(self.convertToNGram(sequence[i:(i+n)]))
+                prob *= self.giveProbability(self.convertToNGram(sequence[i:(i+n)]), len(sequence))
 
         return prob
