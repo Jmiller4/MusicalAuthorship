@@ -4,10 +4,11 @@ import convert
 import piece
 import os
 import NGLearner
+import math
 
 def predict(piece, learners, n):
 	bestMatch = ""
-	bestProb = 0
+	bestProb = -(math.inf)
 
 	for learner in learners.keys(): #check function/variable names here; it's a little long-winded
 		thisBassProb = learners[learner].FB.giveProbabilityOfSequence(piece.getFBList(), n)
