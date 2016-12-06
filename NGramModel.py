@@ -57,8 +57,8 @@ class N_Gram_Model():
             gram += "^" + self.catchFiguredBass(k)
         return gram
 
-    def catchFiguredBass(self, list, isFiguredBass):
-        if isFiguredBass:
+    def catchFiguredBass(self, list):
+        if self.isFiguredBass:
             try:
                 s = ""
                 for i in list:
