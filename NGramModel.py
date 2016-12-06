@@ -80,7 +80,7 @@ class N_Gram_Model():
     #this function gives the probablility of a specific n gram occurring, and it recursively uses backoff...
     #I'm actually not sure that using backoff is a good idea overall...
     #b is the psuedocount for the denominator
-    def giveProbablility(self, n_gram, n, b):
+    def giveProbability(self, n_gram, n, b):
 
         if n == 0:
             print("wow, not even a unigram matched this one")
