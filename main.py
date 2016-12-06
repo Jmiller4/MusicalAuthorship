@@ -8,7 +8,7 @@ import math
 
 def predict(piece, learners, n):
 	bestMatch = ""
-	bestProb = -(math.inf)
+	bestProb = -9999999
 
 	for learner in learners.keys(): #check function/variable names here; it's a little long-winded
 		thisBassProb = learners[learner].FB.giveProbabilityOfSequence(piece.getFBList(), n)
