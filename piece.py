@@ -10,7 +10,7 @@ class Piece():
 		self.chordList = chords
 
 	def getFBList(self):
-		return FBList
+		return self.FBList
 
 	def getChordList(self):
-		return chordList
+		return self.chordList

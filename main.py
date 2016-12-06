@@ -65,7 +65,10 @@ def main():
 
 		print (learners) #to test, for now
 
-		PC = convert.Converter(toPredict) #piece converter initialization
+		x = os.path.dirname(__file__) #get filepath to input file
+		testPath = os.path.join(x, toPredict)
+
+		PC = convert.Converter(testPath) #piece converter initialization
 		PC.convert() #convert the piece
 		pieceToPredict = piece.Piece(PC.getBass(), PC.getChords()) #create the piece python object
 
