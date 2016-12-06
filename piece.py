@@ -1,7 +1,7 @@
 class Piece():
-	def __init__(self):
-		self.FBList = []
-		self.chordList = []
+	def __init__(self, FB, chords):
+		self.FBList = FB
+		self.chordList = chords
 
 	def setFBList(self, FB):
 		self.FBList = FB
