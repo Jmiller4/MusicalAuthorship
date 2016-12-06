@@ -85,7 +85,7 @@ class N_Gram_Model():
 
         if n == 0:
             print("wow, not even a unigram matched this one")
-            return m.log(1.0 / (self.total_grams[n] + b))
+            return m.log(1.0 / (self.total_grams[1] + b))
 
         if n_gram in self.n_grams[n]:
             return m.log(float(self.n_grams[n][n_gram] + 1) / (self.total_grams[n] + b))
