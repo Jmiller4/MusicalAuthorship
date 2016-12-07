@@ -91,7 +91,7 @@ class N_Gram_Model():
             return m.log(float(self.n_grams[n][n_gram] + 1) / (self.total_grams[n] + b))
         else:
             if backoff:
-                return self.giveProbability(self.decrease_gram(n_gram), n-1, b)
+                return self.giveProbability(self.decrease_gram(n_gram), n-1, b, backoff)
             else:
                 return m.log(1.0 / self.total_grams[n] + b)
 
