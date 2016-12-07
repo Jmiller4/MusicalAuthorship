@@ -17,9 +17,11 @@ def predict(piece, learners, n):
 		totalBassGrams += learners[learner].getFB().total_grams[1]
 
 	for learner in learners.keys(): #check function/variable names here; it's a little long-winded
-		thisBassProb = learners[learner].FB.giveProbabilityOfSequence(piece.getFBList(), n, totalBassGrams)
-		thisChordProb = learners[learner].chords.giveProbabilityOfSequence(piece.getChordList(), n, totalChordGrams)
+		thisBassProb = learners[learner].FB.giveProbabilityOfSequence(piece.getFBList(), n, totalBassGrams, True)
+		thisChordProb = learners[learner].chords.giveProbabilityOfSequence(piece.getChordList(), n, totalChordGrams, True)
 		thisProb = ((thisBassProb+thisChordProb)/2) #gets average of n-gram probabilities of figured bass & chords for this piece and composer
+
+		print(learner, thisProb)
 
 		if (thisProb > bestProb):
 			bestProb = thisProb

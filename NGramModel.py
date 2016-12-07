@@ -81,7 +81,7 @@ class N_Gram_Model():
     #this function gives the probablility of a specific n gram occurring, and it recursively uses backoff...
     #I'm actually not sure that using backoff is a good idea overall...
     #b is the psuedocount for the denominator
-    def giveProbability(self, n_gram, n, b):
+    def giveProbability(self, n_gram, n, b, backoff):
 
         if n == 0:
             #print("wow, not even a unigram matched this one")
@@ -90,12 +90,17 @@ class N_Gram_Model():
         if n_gram in self.n_grams[n]:
             return m.log(float(self.n_grams[n][n_gram] + 1) / (self.total_grams[n] + b))
         else:
-            return self.giveProbability(self.decrease_gram(n_gram), n-1, b)
+            if backoff:
+                return self.giveProbability(self.decrease_gram(n_gram), n-1, b)
+            else:
+                return m.log(1.0 / self.total_grams[n] + b)
 
     #this method takes in an n, which is the max n the model will look at.
     #so for example if you built a 10-gram model but wanted to see how a 4-gram model would do on the data,
     #you could call this function with n=4
-    def giveProbabilityOfSequence(self, sequence, n, total):
+    #backoff is a Boolean that's true if you want the model to handle unseen values with backoff to a n-1 gram model, if its false the model will use psuedocounts to handle unseen values
+    #(even if backoff is enabled, the model will still use psuedocounts at n = 1)
+    def giveProbabilityOfSequence(self, sequence, n, total, backoff):
 
         if n > self.n:
             print("requested n is greater than this model's n(", self.n,")... decreasing to", self.n)
@@ -105,7 +110,7 @@ class N_Gram_Model():
 
         for i in range(len(sequence)):
             if i + n < len(sequence):
-                prob += self.giveProbability(self.convertToNGram(sequence[i:(i+n)]), n, len(sequence))
+                prob += self.giveProbability(self.convertToNGram(sequence[i:(i+n)]), n, len(sequence), backoff)
 
         prob += m.log(self.total_grams[1] / total)
 
