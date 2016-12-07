@@ -8,7 +8,7 @@ import math
 
 def predict(piece, learners, n):
 	bestMatch = ""
-	bestProb = -9999999
+	bestProb = 0
 
 	totalChordGrams = 0
 	totalBassGrams = 0
@@ -23,7 +23,7 @@ def predict(piece, learners, n):
 
 		print(learner, thisProb)
 
-		if (thisProb > bestProb):
+		if (thisProb < bestProb):
 			bestProb = thisProb
 			bestMatch = learner
 
