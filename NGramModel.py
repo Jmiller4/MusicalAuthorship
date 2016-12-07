@@ -84,7 +84,7 @@ class N_Gram_Model():
     def giveProbability(self, n_gram, n, b):
 
         if n == 0:
-            print("wow, not even a unigram matched this one")
+            #print("wow, not even a unigram matched this one")
             return m.log(1.0 / (self.total_grams[1] + b))
 
         if n_gram in self.n_grams[n]:

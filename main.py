@@ -30,29 +30,30 @@ def train(n):
 	finalPath = os.path.join(currdir, folderpath) #concatenate the two paths for use
 
 	for composer in os.listdir(finalPath): #mxl_files is full of folders corresponding to composers; inside is all pieces of theirs to train with
-		print("checking composer ", composer)
-		nextPath = os.path.join(finalPath, composer) #the path to this composer folder
+		if (composer != ".DS_Store"): 
+			print("checking composer ", composer)
+			nextPath = os.path.join(finalPath, composer) #the path to this composer folder
 
-		composerFB = NGramModel.N_Gram_Model(n, True) #the learner for figured bass
-		composerChords = NGramModel.N_Gram_Model(n, False) #the learner for chords
+			composerFB = NGramModel.N_Gram_Model(n, True) #the learner for figured bass
+			composerChords = NGramModel.N_Gram_Model(n, False) #the learner for chords
 
-		if (os.path.isdir(nextPath)): #if this is a folder
-			print("in folder")
-			for piece in os.listdir(nextPath): #loop through all pieces by the corresponding composer
-			    print("checking piece", piece)
-			    if piece.endswith(".mxl"): #if the file is .mxl format (it should be)
-			    	piecePath = os.path.join(nextPath, piece)
-			    	C = convert.Converter(piecePath)
-			    	C.convert() #convert the file
+			if (os.path.isdir(nextPath)): #if this is a folder
+				print("in folder")
+				for piece in os.listdir(nextPath): #loop through all pieces by the corresponding composer
+				    print("checking piece", piece)
+				    if piece.endswith(".mxl"): #if the file is .mxl format (it should be)
+				    	piecePath = os.path.join(nextPath, piece)
+				    	C = convert.Converter(piecePath)
+				    	C.convert() #convert the file
 
-			    	composerFB.train(C.getBass()) #train on this piece's figured bass for this composer
-			    	composerChords.train(C.getChords()) #train on this piece's chords for this composer
+				    	composerFB.train(C.getBass()) #train on this piece's figured bass for this composer
+				    	composerChords.train(C.getChords()) #train on this piece's chords for this composer
 
-		print("creating learner object for composer", composer)
-		
-		toAdd = NGLearner.learner(composerFB, composerChords) #create the learner object
-		print("adding learner")
-		learners[composer] = toAdd #add it to the learners dictionary
+			print("creating learner object for composer", composer)
+			
+			toAdd = NGLearner.learner(composerFB, composerChords) #create the learner object
+			print("adding learner")
+			learners[composer] = toAdd #add it to the learners dictionary
 		
 	return learners
 
