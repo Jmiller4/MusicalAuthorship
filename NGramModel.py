@@ -107,6 +107,6 @@ class N_Gram_Model():
             if i + n < len(sequence):
                 prob += self.giveProbability(self.convertToNGram(sequence[i:(i+n)]), n, len(sequence))
 
-        prob += log(self.total_grams[1] / total)
+        prob += m.log(self.total_grams[1] / total)
 
         return prob
