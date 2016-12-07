@@ -95,7 +95,7 @@ class N_Gram_Model():
     #this method takes in an n, which is the max n the model will look at.
     #so for example if you built a 10-gram model but wanted to see how a 4-gram model would do on the data,
     #you could call this function with n=4
-    def giveProbabilityOfSequence(self, sequence, n):
+    def giveProbabilityOfSequence(self, sequence, n, total):
 
         if n > self.n:
             print("requested n is greater than this model's n(", self.n,")... decreasing to", self.n)
@@ -106,5 +106,7 @@ class N_Gram_Model():
         for i in range(len(sequence)):
             if i + n < len(sequence):
                 prob += self.giveProbability(self.convertToNGram(sequence[i:(i+n)]), n, len(sequence))
+
+        prob += log(self.total_grams[1] / total)
 
         return prob

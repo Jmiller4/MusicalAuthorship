@@ -10,9 +10,15 @@ def predict(piece, learners, n):
 	bestMatch = ""
 	bestProb = -9999999
 
+	totalChordGrams = 0
+	totalBassGrams = 0
+	for learner in learners.keys():
+		totalChordGrams += learners[learner].getChords().total_grams[1]
+		totalBassGrams += learners[learner].getFB().total_grams[1]
+
 	for learner in learners.keys(): #check function/variable names here; it's a little long-winded
-		thisBassProb = learners[learner].FB.giveProbabilityOfSequence(piece.getFBList(), n)
-		thisChordProb = learners[learner].chords.giveProbabilityOfSequence(piece.getChordList(), n)
+		thisBassProb = learners[learner].FB.giveProbabilityOfSequence(piece.getFBList(), n, totalBassGrams)
+		thisChordProb = learners[learner].chords.giveProbabilityOfSequence(piece.getChordList(), n, totalChordGrams)
 		thisProb = ((thisBassProb+thisChordProb)/2) #gets average of n-gram probabilities of figured bass & chords for this piece and composer
 
 		if (thisProb > bestProb):
@@ -59,7 +65,7 @@ def train(n):
 
 def main():
 	toPredict = ""
-	while (toPredict != 'exit'):
+	while (toPredict != 'exit'): #TODO: only relearn if n is different
 		toPredict = input("Please specify the filepath to a .mxl score to predict, or type 'exit' to quit: ")
 		n = eval(input("What length n-gram model? "))
 
