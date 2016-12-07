@@ -1,8 +1,10 @@
 
 from music21 import *
-
+#creates a class for a single piece passed in as the file path
+#call convert to populate chords with roman numeral chord names & populate bass with intervals against tonic
 class Converter:
 
+	#file is a string with path to .mxl file
 	def __init__(self, file):
 		self.file = file
 		self.chords = []
@@ -26,6 +28,7 @@ class Converter:
 				elif (notes[i].isRest):
 					addList.append(notes[i])
 			self.bass.append(addList)
+	#getters
 	def getBass(self):
 		return self.bass
 	def getChords(self):
