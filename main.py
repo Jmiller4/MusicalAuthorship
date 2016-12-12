@@ -104,10 +104,39 @@ def main():
 		#pieceToPredict = piece.Piece(PC.getBass(), PC.getChords()) #create the piece python object
 		testing = processTestSet()
 
+		total = 0
+		correct = 0
+		matrix = {} #the confusion matrix. It's indexed by predicted label, actual label
+		for l1 in testing.keys():
+			matrix[l1] = {}
+			for l2 in testing.keys():
+				matrix[l1][l2] = 0
+
 		for composer in testing.keys():
 			for piece in testing[composer]:
 				bestGuess = predict(piece, learners, n) #return the best guess prediction
 				print("I'm pretty sure that", toPredict, "was composed by", bestGuess)
+
+		#Making the confusion matrix as a string
+		confusionMatrix = ""
+		strTop = ""
+		for l in range(len(labelList)):
+			strTop = strTop + labelList[l]
+			if l + 1 != len(labelList):
+				strTop = strTop + ","
+		confusionMatrix += strTop + "\n"
+		for i in range(len(labelList)):
+			strLine = ""
+			for j in range(len(labelList)):
+				strLine += str(matrixHelper[(labelList[j], labelList[i])])
+				strLine += ","
+			strLine += labelList[i]
+			confusionMatrix += strLine + "\n"
+
+		print("Overall accuracy:", float(correct)/ total)
+		print(confusionMatrix)
+
+
 
 main()
 
