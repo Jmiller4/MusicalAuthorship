@@ -30,6 +30,27 @@ def predict(piece, learners, n):
 	return bestMatch
 
 
+def processTestSet():
+	testPieces = {} #{composer name: piece object}
+
+	currdir = os.path.dirname(__file__) #the absolute filepath to the directory containing main.py
+	folderpath = "test_set" #the subdirectory containing our training data
+	finalPath = os.path.join(currdir, folderpath) #concatenate the two paths for use
+
+	for composer in os.listdir(finalPath): #test_set is full of folders corresponding to composers; inside is all pieces of theirs to train with
+		testPieces[composer] = []
+		if (composer != ".DS_Store"):
+			nextPath = os.path.join(finalPath, composer) #the path to this composer folder
+			if (os.path.isdir(nextPath)): #if this is a folder
+				for testPiece in os.listdir(nextPath): #loop through all pieces by the corresponding composer
+					if testPiece.endswith(".mxl"): #if the file is .mxl format (it should be)
+						piecePath = os.path.join(nextPath, testPiece)
+						C = convert.Converter(piecePath)
+						C.convert() #convert the file
+						toAdd = piece.Piece(C.getBass(), C.getChords())
+						testPieces[composer].append(toAdd)
+	return testPieces
+
 def train(n):
 	learners = {} #{composer name: NGLearner object}
 
@@ -68,23 +89,25 @@ def train(n):
 def main():
 	toPredict = ""
 	while (toPredict != 'exit'): #TODO: only relearn if n is different
-		toPredict = input("Please specify the filepath to a .mxl score to predict, or type 'exit' to quit: ")
+		#toPredict = input("Please specify the filepath to a .mxl score to predict, or type 'exit' to quit: ")
 		n = eval(input("What length n-gram model? "))
 
 		learners = train(n) #list of piece objects to train on
 
 		print (learners) #to test, for now
 
-		x = os.path.dirname(__file__) #get filepath to input file
-		testPath = os.path.join(x, toPredict)
+		#x = os.path.dirname(__file__) #get filepath to input file
+		#testPath = os.path.join(x, toPredict)
 
-		PC = convert.Converter(testPath) #piece converter initialization
-		PC.convert() #convert the piece
-		pieceToPredict = piece.Piece(PC.getBass(), PC.getChords()) #create the piece python object
+		#PC = convert.Converter(testPath) #piece converter initialization
+		#PC.convert() #convert the piece
+		#pieceToPredict = piece.Piece(PC.getBass(), PC.getChords()) #create the piece python object
+		testing = processTestSet()
 
-		bestGuess = predict(pieceToPredict, learners, n) #return the best guess prediction
-
-		print("I'm pretty sure that", toPredict, "was composed by", bestGuess)
+		for composer in testing.keys():
+			for piece in testing[composer]:
+				bestGuess = predict(piece, learners, n) #return the best guess prediction
+				print("I'm pretty sure that", toPredict, "was composed by", bestGuess)
 
 main()
 
