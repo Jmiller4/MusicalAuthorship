@@ -117,6 +117,11 @@ def main():
 				bestGuess = predict(piece, learners, n) #return the best guess prediction
 				print("I'm pretty sure that", toPredict, "was composed by", bestGuess)
 
+				if composer == bestGuess:
+					correct += 1
+				total += 1
+				matrix[bestGuess][composer] += 1
+
 		#Making the confusion matrix as a string
 		confusionMatrix = ""
 		strTop = ""
