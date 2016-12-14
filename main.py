@@ -95,12 +95,15 @@ def train(n):
 		
 	return learners
 
+#this function runs a set of N-gram models on testing data, given some hyperparameters
+#it returns a list with lots of information about how testing went
 def testWithParameters(testing, learners, n, backoff, chord_FB_split):
 
 	infoDict = {}
 	infoDict["n"] = str(n)
 	infoDict["backoff"] = str(backoff)
 	infoDict["chord_FB_split"] = str(chord_FB_split)
+	infoDict["filename"] = "NGramModel_N"+str(n)+"_backoff"+str(backoff)+"_ChordBassSplit"+str(chord_FB_split)+".csv"
 
 	total = 0
 	correct = 0
@@ -120,7 +123,25 @@ def testWithParameters(testing, learners, n, backoff, chord_FB_split):
 			total += 1
 			matrix[bestGuess][composer] += 1
 
-	return list(infoDict, correct, total, matrix)
+	#Making the confusion matrix as a string
+	confusionMatrix = ""
+	strTop = ""
+	for l in range(len(labelList)):
+		strTop = strTop + labelList[l]
+		if l + 1 != len(labelList):
+			strTop = strTop + ","
+	confusionMatrix += strTop + "\n"
+	for i in range(len(labelList)):
+		strLine = ""
+		for j in range(len(labelList)):
+			strLine += str(matrixHelper[(labelList[j], labelList[i])])
+			strLine += ","
+		strLine += labelList[i]
+		confusionMatrix += strLine + "\n"
+
+	infoDict["matrix"] = confusionMatrix
+
+	return list(infoDict, correct, total, (float(correct) / total), matrix) #this last item in the list, "matrix", is the dictionary of the confusion matrix, rather than the string of the confusion matrix
 
 
 def main():
