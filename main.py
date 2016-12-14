@@ -6,7 +6,7 @@ import os
 import NGLearner
 import math
 
-def predict(piece, learners, n):
+def predict(piece, learners, n, chord_FB_split):
 	bestMatch = ""
 	bestProb = -99999999
 
@@ -19,7 +19,16 @@ def predict(piece, learners, n):
 	for learner in learners.keys(): #check function/variable names here; it's a little long-winded
 		thisBassProb = learners[learner].FB.giveProbabilityOfSequence(piece.getFBList(), n, totalBassGrams, True)
 		thisChordProb = learners[learner].chords.giveProbabilityOfSequence(piece.getChordList(), n, totalChordGrams, True)
-		thisProb = ((thisBassProb+thisChordProb)/2) #gets average of n-gram probabilities of figured bass & chords for this piece and composer
+
+		if (chord_FB_split > 1.0) | (chord_FB_split < 0.0):
+			print("WARNING: illegal chord_FB_split of", chord_FB_split)
+			print("reverting to 0.5")
+			chord_FB_split = 0.5
+
+		chordWeight = chord_FB_split
+		FBWeight = 1.0 - chord_FB_split
+
+		thisProb = (chordWeight * thisChordProb) + (FBWeight * thisBassProb) #gets a weighted average of n-gram probabilities of figured bass & chords for this piece and composer
 
 		print(learner, thisProb)
 
@@ -86,6 +95,34 @@ def train(n):
 		
 	return learners
 
+def testWithParameters(testing, learners, n, backoff, chord_FB_split):
+
+	infoDict = {}
+	infoDict["n"] = str(n)
+	infoDict["backoff"] = str(backoff)
+	infoDict["chord_FB_split"] = str(chord_FB_split)
+
+	total = 0
+	correct = 0
+	matrix = {} #the confusion matrix. It's indexed by predicted label, actual label
+	for l1 in testing.keys():
+		matrix[l1] = {}
+		for l2 in testing.keys():
+			matrix[l1][l2] = 0
+
+	for composer in testing.keys():
+		for piece in testing[composer]:
+
+			bestGuess = predict(piece, learners, n, chord_FB_split) #return the best guess prediction
+
+			if composer == bestGuess:
+				correct += 1
+			total += 1
+			matrix[bestGuess][composer] += 1
+
+	return list(infoDict, correct, total, matrix)
+
+
 def main():
 	toPredict = ""
 	while (toPredict != 'exit'): #TODO: only relearn if n is different
@@ -114,7 +151,7 @@ def main():
 
 		for composer in testing.keys():
 			for piece in testing[composer]:
-				bestGuess = predict(piece, learners, n) #return the best guess prediction
+				bestGuess = predict(piece, learners, n, 0.5) #return the best guess prediction
 				print("I'm pretty sure that", toPredict, "was composed by", bestGuess)
 
 				if composer == bestGuess:
