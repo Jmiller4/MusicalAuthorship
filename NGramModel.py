@@ -102,6 +102,10 @@ class N_Gram_Model():
     #(even if backoff is enabled, the model will still use psuedocounts at n = 1)
     def giveProbabilityOfSequence(self, sequence, n, total, backoff):
 
+        if self.total_grams[1] == 0:
+            print("Oy... looks like this model has never been trained. So it can't really give a probability...")
+            return 0
+
         if n > self.n:
             print("requested n is greater than this model's n(", self.n,")... decreasing to", self.n)
             n = self.n

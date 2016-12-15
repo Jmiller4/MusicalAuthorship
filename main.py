@@ -30,8 +30,6 @@ def predict(piece, learners, n, chord_FB_split):
 
 		thisProb = (chordWeight * thisChordProb) + (FBWeight * thisBassProb) #gets a weighted average of n-gram probabilities of figured bass & chords for this piece and composer
 
-		print(learner, thisProb)
-
 		if (thisProb > bestProb):
 			bestProb = thisProb
 			bestMatch = learner
@@ -108,9 +106,11 @@ def testWithParameters(testing, learners, n, backoff, chord_FB_split):
 	total = 0
 	correct = 0
 	matrix = {} #the confusion matrix. It's indexed by predicted label, actual label
-	for l1 in testing.keys():
+
+	labelList = list(learners.keys())
+	for l1 in labelList:
 		matrix[l1] = {}
-		for l2 in testing.keys():
+		for l2 in labelList:
 			matrix[l1][l2] = 0
 
 	for composer in testing.keys():
@@ -134,14 +134,14 @@ def testWithParameters(testing, learners, n, backoff, chord_FB_split):
 	for i in range(len(labelList)):
 		strLine = ""
 		for j in range(len(labelList)):
-			strLine += str(matrixHelper[(labelList[j], labelList[i])])
+			strLine += str(matrix[labelList[j]][labelList[i]])
 			strLine += ","
 		strLine += labelList[i]
 		confusionMatrix += strLine + "\n"
 
 	infoDict["matrix"] = confusionMatrix
 
-	return list(infoDict, correct, total, (float(correct) / total), matrix) #this last item in the list, "matrix", is the dictionary of the confusion matrix, rather than the string of the confusion matrix
+	return list([infoDict, correct, total, (float(correct) / total), matrix]) #this last item in the list, "matrix", is the dictionary of the confusion matrix, rather than the string of the confusion matrix
 
 
 def main():
@@ -162,42 +162,15 @@ def main():
 		#pieceToPredict = piece.Piece(PC.getBass(), PC.getChords()) #create the piece python object
 		testing = processTestSet()
 
-		total = 0
-		correct = 0
-		matrix = {} #the confusion matrix. It's indexed by predicted label, actual label
-		for l1 in testing.keys():
-			matrix[l1] = {}
-			for l2 in testing.keys():
-				matrix[l1][l2] = 0
+		resultsDict = {}
+		for backoff in [True, False]:
+			resultsDict[backoff] = {}
+			for split in [0.0, 0.25, 0.5, 0.75, 1.0]:
+				resultsDict[backoff][split] = {}
+				for n_toUse in range(n+1)[1:]:
+					resultsDict[backoff][split][n] = testWithParameters(testing, learners, n_toUse, backoff, split)
 
-		for composer in testing.keys():
-			for piece in testing[composer]:
-				bestGuess = predict(piece, learners, n, 0.5) #return the best guess prediction
-				print("I'm pretty sure that", toPredict, "was composed by", bestGuess)
-
-				if composer == bestGuess:
-					correct += 1
-				total += 1
-				matrix[bestGuess][composer] += 1
-
-		#Making the confusion matrix as a string
-		confusionMatrix = ""
-		strTop = ""
-		for l in range(len(labelList)):
-			strTop = strTop + labelList[l]
-			if l + 1 != len(labelList):
-				strTop = strTop + ","
-		confusionMatrix += strTop + "\n"
-		for i in range(len(labelList)):
-			strLine = ""
-			for j in range(len(labelList)):
-				strLine += str(matrixHelper[(labelList[j], labelList[i])])
-				strLine += ","
-			strLine += labelList[i]
-			confusionMatrix += strLine + "\n"
-
-		print("Overall accuracy:", float(correct)/ total)
-		print(confusionMatrix)
+		print("finished testing!")
 
 
 
