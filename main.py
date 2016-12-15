@@ -1,4 +1,4 @@
-from music21 import MusicXMLImportException
+import music21
 import NGramModel
 import convert
 import piece
@@ -86,7 +86,7 @@ def train(n):
 				    	C = convert.Converter(piecePath)
 				    	try:
 				    		C.convert() #convert the file
-				    	except MusicXMLImportException:
+				    	except music21.musicxml.xmlToM21.MusicXMLImportException:
 				    		continue
 
 				    	composerFB.train(C.getBass()) #train on this piece's figured bass for this composer
