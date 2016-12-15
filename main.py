@@ -1,4 +1,4 @@
-#from music21 import * maybe need this maybe not
+from music21 import MusicXMLImportException
 import NGramModel
 import convert
 import piece
@@ -84,7 +84,10 @@ def train(n):
 				    if piece.endswith(".mxl"): #if the file is .mxl format (it should be)
 				    	piecePath = os.path.join(nextPath, piece)
 				    	C = convert.Converter(piecePath)
-				    	C.convert() #convert the file
+				    	try:
+				    		C.convert() #convert the file
+				    	except MusicXMLImportException:
+				    		continue
 
 				    	composerFB.train(C.getBass()) #train on this piece's figured bass for this composer
 				    	composerChords.train(C.getChords()) #train on this piece's chords for this composer
