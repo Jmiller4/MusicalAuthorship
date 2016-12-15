@@ -58,6 +58,7 @@ def processTestSet():
 						testPieces[composer].append(toAdd)
 	return testPieces
 
+
 def train(n):
 	learners = {} #{composer name: NGLearner object}
 
@@ -143,12 +144,40 @@ def testWithParameters(testing, learners, n, backoff, chord_FB_split):
 
 	return list([infoDict, correct, total, (float(correct) / total), matrix]) #this last item in the list, "matrix", is the dictionary of the confusion matrix, rather than the string of the confusion matrix
 
+def main2():
+	toPredict = ""
+
+	n = 10
+
+	learners = train(n) #list of piece objects to train on
+
+	print (learners) #to test, for now
+
+	testing = processTestSet()
+
+	resultsDict = {}
+	for backoff in [True, False]:
+		resultsDict[backoff] = {}
+		for split in [0.0, 0.25, 0.5, 0.75, 1.0]:
+			resultsDict[backoff][split] = {}
+			for n_toUse in range(n+1)[1:]:
+				resultsDict[backoff][split][n_toUse] = testWithParameters(testing, learners, n_toUse, backoff, split)
+
+	print(resultsDict)
+
+
 
 def main():
 	toPredict = ""
 	while (toPredict != 'exit'): #TODO: only relearn if n is different
 		#toPredict = input("Please specify the filepath to a .mxl score to predict, or type 'exit' to quit: ")
 		n = eval(input("What length n-gram model? "))
+
+		backoff = bool(input("Enter True to use backoff, False to not use backoff:"))
+
+		split = float(input("What weight do you want chords to have, vs figured bass? Enter 1.0 to have prediction entirely based on chords. Enter 0.0 to have prediction entirely based on figured bass:"))
+
+		writingBool = bool(input("Enter True to write these results to a file, enter False not to."))
 
 		learners = train(n) #list of piece objects to train on
 
@@ -162,16 +191,18 @@ def main():
 		#pieceToPredict = piece.Piece(PC.getBass(), PC.getChords()) #create the piece python object
 		testing = processTestSet()
 
-		resultsDict = {}
-		for backoff in [True, False]:
-			resultsDict[backoff] = {}
-			for split in [0.0, 0.25, 0.5, 0.75, 1.0]:
-				resultsDict[backoff][split] = {}
-				for n_toUse in range(n+1)[1:]:
-					resultsDict[backoff][split][n] = testWithParameters(testing, learners, n_toUse, backoff, split)
+		results = testWithParameters(testing, learners, n, backoff, split)
 
 		print("finished testing!")
 
+		print("accuracy:", results[3])
+		print(results[0]["matrix"])
+
+		if writingBool:
+			fileObject = open(results[0]["filename"], 'w')
+			fileObject.write(results[0]["matrix"])
+			fileObject.close()
+			print("wrote to file. see ya.")
 
 
 main()
