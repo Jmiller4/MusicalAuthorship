@@ -59,6 +59,9 @@ def processTestSet():
 	return testPieces
 
 
+#the error we were getting is:  music21.musicxml.xmlToM21.MusicXMLImportException
+#you might just be able to reference it as music21.MusicXMLImportException
+
 def train(n):
 	learners = {} #{composer name: NGLearner object}
 
