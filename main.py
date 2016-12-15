@@ -87,6 +87,7 @@ def train(n):
 				    	try:
 				    		C.convert() #convert the file
 				    	except music21.musicxml.xmlToM21.MusicXMLImportException:
+				    		print("Error: %s could not be parsed.\n" % (piece))
 				    		continue
 
 				    	composerFB.train(C.getBass()) #train on this piece's figured bass for this composer
